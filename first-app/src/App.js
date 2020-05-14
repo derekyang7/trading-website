@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Test from './components/Test';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Symbol from './components/Symbol';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         Helelo
       </p>
       <Test></Test>
+      <Symbol></Symbol>
       </header>
 
     </div>

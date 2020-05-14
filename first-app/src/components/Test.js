@@ -13,10 +13,10 @@ class Test extends Component {
                 </p>
 
                 <Card >
-                    <Card.Header as="h5" class='body-text'>Hello Derek</Card.Header>
+                    <Card.Header as="h5" className='body-text'>Hello Derek</Card.Header>
                     <Card.Body>
 
-                        <Card.Text class='body-text'>My name is Derek</Card.Text>
+                        <Card.Text className='body-text'>My name is Derek</Card.Text>
                     </Card.Body>
                 </Card>
             </div>
