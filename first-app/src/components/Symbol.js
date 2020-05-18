@@ -1,6 +1,10 @@
 import React from 'react';
 import { Component } from 'react';
 import { Table } from 'react-bootstrap';
+import history from './../history';
+import {  } from 'react-router-dom';
+
+
 
 class Symbol extends Component {
     constructor(props) {
@@ -9,6 +13,13 @@ class Symbol extends Component {
             data: null,
             loaded: false
         };
+        //this.stockLookup = this.stockLookup.bind(this);
+    }
+
+    stockLookup(id) {
+        console.log(id);
+        history.push('/PriceList/' + id);
+
     }
 
     componentDidMount() {
@@ -40,14 +51,14 @@ class Symbol extends Component {
                     <thead>
                         <tr>
                             <th>
-                                Stocks
+                                Available Stocks:
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {hits.map(hit =>
                             <tr>
-                                <td key={(hit.Symbol)}>
+                                <td key={(hit.Symbol)} onClick={() => this.stockLookup(hit.Symbol)}>
                                     {hit.Symbol}
                                 </td>
                             </tr>

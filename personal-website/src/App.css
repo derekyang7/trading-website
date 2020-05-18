@@ -28,49 +28,6 @@
   color: #61dafb;
 }
 
-.body-text {
-  color: #282c28;
-}
-
-.my-form {
-  border: thin solid grey;
-  padding: 2rem;
-  margin: 2rem;
-  display: flex;
-}
-
-.my-form-text {
-  margin: 2rem;
-  display: flex;
-  font-size: 1em;
-}
-
-.big-text {
-  margin: 2rem;
-  font-size: 2em;
-  text-align: center;
-}
-
-.photo {
-  height: 250px;
-  width: 250px; 
-}
-
-.price-list-text {
-  margin: 2rem;
-  font-size: 1em;
-  text-align: center;
-}
- 
-.formtext {
-  position: relative;
-  top: -48px;
-  background: white;
-  padding: 7px;
-  width: 57px;
-  color: red;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
