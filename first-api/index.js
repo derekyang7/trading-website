@@ -10,7 +10,7 @@ var connection =
         type: "default",
         options: {
             "userName": "sa",
-            "password": "Duoduo88",
+            "password": "___",
         }
     },
     
