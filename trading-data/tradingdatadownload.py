@@ -9,6 +9,21 @@ from sqlalchemy import create_engine
 import sys, getopt
 
 def saveToTable(df, tableName, cnxn, engine):
+    """
+    Save a DataFrame to a specified SQL table.
+
+    This function removes all existing data from the specified database table
+    and then appends the data from the given DataFrame to the table.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame containing the data to be saved.
+    tableName (str): The name of the table in the database.
+    cnxn (pyodbc.Connection): The connection object to the database.
+    engine (sqlalchemy.engine.Engine): The SQLAlchemy engine object for the database.
+
+    Returns:
+    None
+    """
 
     # remove all existing data from database table
     cursor = cnxn.cursor()
@@ -19,6 +34,23 @@ def saveToTable(df, tableName, cnxn, engine):
     df.to_sql(tableName, engine, if_exists='append',schema='dbo', index=True)
 
 def downloadDaily(ticker_symbols, cnxn, engine):
+    """
+    Downloads daily trading data and option chains for a list of ticker symbols and stores them in a database.
+    Parameters:
+    ticker_symbols (list): A list of ticker symbols to download data for.
+    cnxn (pyodbc.Connection): A connection object to the database.
+    engine (sqlalchemy.engine.Engine): An SQLAlchemy engine object to interact with the database.
+    The function performs the following steps:
+    1. Executes a stored procedure 'spProcessDailyData' to process daily data.
+    2. For each ticker symbol in the list:
+        a. Downloads daily trading data for the past year with a daily interval.
+        b. Adds the symbol and date as indexes to the data.
+        c. Saves the daily trading data to a temporary table 'tmpDaily' in the database.
+        d. Downloads the option chain data for the ticker symbol.
+        e. If the option chain data is not a string, adds a creation date and saves it to the 'Option' table in the database.
+    3. Executes the stored procedure 'spProcessDailyData' again to process the newly downloaded data.
+    """
+
 
     cursor = cnxn.cursor()
     cursor.execute('EXEC spProcessDailyData')
@@ -56,6 +88,29 @@ def downloadDaily(ticker_symbols, cnxn, engine):
 
 
 def main(argv):
+    """
+    Main function to download trading data based on the specified interval.
+
+    Args:
+        argv (list): List of command-line arguments.
+
+    Command-line Arguments:
+        -i, --interval: Specifies the interval for downloading trading data.
+                        Possible values are 'weekly', 'daily', and 'hourly'.
+
+    Raises:
+        getopt.GetoptError: If there is an error in the command-line arguments.
+
+    Exits:
+        2: If the interval is not provided or if there is an error in the command-line arguments.
+        0: If the help option is provided.
+
+    Functionality:
+        - Connects to the trading database.
+        - Retrieves ticker symbols from the 'Symbol' table.
+        - Downloads trading data based on the specified interval.
+        - Saves the downloaded data to the corresponding table in the database.
+    """
     interval = ''
 
     try:
