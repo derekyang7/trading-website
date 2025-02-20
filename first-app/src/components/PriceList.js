@@ -1,3 +1,14 @@
+/**
+ * PriceList component fetches and displays the price list of a stock symbol.
+ *
+ * @param {Object} props - The properties passed to the component.
+ * @param {Object} props.match - The match object provided by the router.
+ * @param {Object} props.match.params - The parameters from the URL.
+ * @param {string} props.match.params.id - The stock symbol ID from the URL.
+ *
+ * @property {Array} state.data - The fetched data for the stock symbol.
+ * @property {boolean} state.loaded - Indicates whether the data has been loaded.
+ */
 import React from 'react';
 import { Component } from 'react';
 
@@ -12,7 +23,7 @@ class PriceList extends Component {
     }
     componentDidMount () {
         const { id } = this.props.match.params;
-    
+
         fetch(`http://localhost:3000/api/symbol/${id}`)
         .then(response => {
             return response.json();
@@ -49,13 +60,13 @@ class PriceList extends Component {
             <main>
                 <div className='big-text'>
                 Price List for {this.props.match.params.id}:
-                
+
             </div>
             <div className='price-list-text'>
                 {content}
                 </div>
             </main>
-            
+
 
         )
     }

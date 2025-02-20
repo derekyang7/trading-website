@@ -3,6 +3,9 @@ import { Component } from 'react';
 import { Navbar, NavDropdown, Nav, Form, FormControl, Button } from 'react-bootstrap';
 
 class MyNavbar extends Component {
+    /**
+     * Renders the navigation bar component.
+     */
     render() {
         return (
           <Navbar bg="dark" variant="dark">

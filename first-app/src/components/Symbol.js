@@ -1,3 +1,22 @@
+/**
+ * Symbol component that fetches and displays a list of available stocks.
+ *
+ * @class Symbol
+ * @extends {Component}
+ *
+ * @property {Object} state - The state of the component.
+ * @property {Array|null} state.data - The fetched data containing stock symbols.
+ * @property {boolean} state.loaded - Indicates whether the data has been loaded.
+ *
+ * @method stockLookup - Handles the click event on a stock symbol and navigates to the PriceList page.
+ * @param {string} id - The stock symbol.
+ *
+ * @method componentDidMount - Lifecycle method that fetches the stock symbols from the API.
+ *
+ * @method render - Renders the component.
+ *
+ * @returns {JSX.Element} - The rendered component.
+ */
 import React from 'react';
 import { Component } from 'react';
 import { Table } from 'react-bootstrap';

@@ -1,3 +1,6 @@
+/**
+ * HomePage component renders the main content of the homepage.
+ */
 import React from 'react';
 import { Component } from 'react';
 import Stonks from "./stonks.jpg"
@@ -11,7 +14,7 @@ class HomePage extends Component {
                 <img class='photo' src={Stonks} alt='stonks'></img>
             </div>
             </main>
-            
+
 
         )
     }

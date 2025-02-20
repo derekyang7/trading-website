@@ -1,3 +1,7 @@
+/**
+ * Contact component renders a contact form with email, password fields,
+ * and a submit button. It uses React Bootstrap for styling.
+ */
 import React from 'react';
 import { Component } from 'react';
 import { Form, Button } from 'react-bootstrap';
