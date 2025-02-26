@@ -39,6 +39,7 @@ pip-log.txt
 
 # Jupyter Notebook
 .ipynb_checkpoints/
+*.ipynb
 
 # Terraform
 *.tfstate
