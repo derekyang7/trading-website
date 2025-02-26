@@ -1,0 +1,36 @@
+services:
+  first-api:
+    build:
+      context: ./first-api
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+    depends_on:
+      - trading-data
+
+  first-app:
+    build:
+      context: ./first-app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - first-api
+    environment:
+      - REACT_APP_API_URL=http://first-api:3001
+
+  trading-data:
+    build:
+      context: ./trading-data
+      dockerfile: Dockerfile
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+    command: ["python3", "tradingdatadownload.py", "-i", "daily"]
