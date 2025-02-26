@@ -20,12 +20,15 @@ This application is useful for:
 - Node.js and npm installed on your machine.
 - Python and Anaconda installed on your machine.
 - SQL Server database with the necessary tables (`Symbol`, `Daily`, `Weekly`, `Hourly`, `Option`).
+- Docker installed for containerization
+- Terraform installed for infrastructure provisioning
+- Azure CLI installed for Azure deployments
 
 ### Installation
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/trading-website.git
+    git clone https://github.com/derekyang7/trading-website.git
     cd trading-website
     ```
 
@@ -41,77 +44,6 @@ This application is useful for:
     npm install
     ```
 
-### Running the Application
-
-1. Start the API server:
-    ```sh
-    cd first-api
-    node index.js
-    ```
-
-2. Start the React app:
-    ```sh
-    cd ../first-app
-    npm start
-    ```
-
-3. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to view the application.
-
-### Downloading Trading Data
-
-1. Activate the Anaconda environment and run the Python script to download trading data:
-    ```sh
-    cd ../trading-data
-    ./downloadDaily.bat
-    ./downloadHourly.bat
-    ./downloadWeekly.bat
-    ```
-
-## Local Development Environment Setup
-
-### Setting Up the API
-
-1. Create a `.env` file in the `first-api` directory with the following content:
-    ```env
-    SERVER=your_sql_server_ip
-    USERNAME=your_sql_server_username
-    PASSWORD=your_sql_server_password
-    DATABASE=trading
-    ```
-
-2. Modify the `index.js` file in the `first-api` directory to use the environment variables:
-    ```javascript
-    // filepath: /Users/derekyang/Repos/trading-website/first-api/index.js
-    // ...existing code...
-    var connection = {
-        "server": process.env.SERVER,
-        "authentication": {
-            type: "default",
-            options: {
-                "userName": process.env.USERNAME,
-                "password": process.env.PASSWORD,
-            }
-        },
-        options: { "encrypt": true, "database": process.env.DATABASE }
-    };
-    // ...existing code...
-    ```
-
-### Setting Up the React App
-
-1. Create a `.env` file in the `first-app` directory with the following content:
-    ```env
-    REACT_APP_API_URL=http://localhost:3001
-    ```
-
-2. Modify the API calls in the React components to use the environment variable:
-    ```javascript
-    // filepath: /Users/derekyang/Repos/trading-website/first-app/src/components/YourComponent.js
-    // ...existing code...
-    fetch(`${process.env.REACT_APP_API_URL}/api/symbol`)
-    // ...existing code...
-    ```
-
 ### Setting Up the Python Environment
 
 1. Create a new Anaconda environment:
@@ -122,17 +54,152 @@ This application is useful for:
 
 2. Install the required Python packages:
     ```sh
-    pip install numpy pandas yahooquery pyodbc sqlalchemy
+    pip install -r trading-data/requirements.txt
     ```
 
-3. Modify the `tradingdatadownload.py` script to use the correct database connection details:
-    ```python
-    # filepath: /Users/derekyang/Repos/trading-website/trading-data/tradingdatadownload.py
-    # ...existing code...
-    cnxn = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};SERVER=your_sql_server_ip;UID=your_sql_server_username;PWD=your_sql_server_password;database=trading")
-    engine = create_engine("mssql+pyodbc://your_sql_server_username:your_sql_server_password@your_sql_server_ip/trading?driver=ODBC+Driver+17+for+SQL+Server")
-    # ...existing code...
+### Running the Application with Docker Compose
+
+1. For local development with Docker:
+
+    ```sh
+    docker-compose up --build
     ```
+2. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to view the application.
+
+### Running the Application without Docker Compose (Alternative)
+
+1. Start the API server:
+
+    ```sh
+    cd first-api
+    node index.js
+    ```
+
+2. Start the React app:
+
+    ```sh
+    cd ../first-app
+    npm start
+    ```
+
+3. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to view the application.
+
+### Downloading Trading Data
+
+1. Activate the Anaconda environment and run the Python script to download trading data. To download daily data, run:
+    ```sh
+    cd ../trading-data
+    ./downloadDaily.bat  # On Windows
+    # or
+    python tradingdatadownload.py -i daily  # On Unix-based systems
+    ```
+
+## Local Development Environment Setup
+
+### Setting Up the Environment
+
+1. Create a `.env` file in the `trading-website` root directory with the following content:
+    ```env
+    DB_SERVER=your_server
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+    DB_DATABASE=your_database
+    ```
+
+## Deployment Instructions
+
+### Using Docker and Azure Container Registry
+
+1. Make sure you've created a root `.env` file with your database credentials:
+   ```env
+   DB_SERVER=your_server
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+   DB_DATABASE=your_database
+   ```
+
+2. Login to Azure CLI and create Azure Container Registry (if not already created):
+   ```sh
+   az login
+   az acr create --resource-group myResourceGroup --name tradingwebsiteacr --sku Basic --admin-enabled true
+   az acr login --name tradingwebsiteacr
+   ```
+
+3. Build Docker images for all components:
+   ```sh
+   docker build -t tradingwebsiteacr.azurecr.io/trading-data:latest ./trading-data
+   docker build -t tradingwebsiteacr.azurecr.io/first-api:latest ./first-api
+   docker build -t tradingwebsiteacr.azurecr.io/first-app:latest ./first-app
+   ```
+
+4. Push the images to Azure Container Registry:
+   ```sh
+   docker push tradingwebsiteacr.azurecr.io/trading-data:latest
+   docker push tradingwebsiteacr.azurecr.io/first-api:latest
+   docker push tradingwebsiteacr.azurecr.io/first-app:latest
+   ```
+
+### Using Terraform for Infrastructure as Code
+
+1. Navigate to the terraform directory:
+   ```sh
+   cd terraform
+   ```
+
+2. Initialize Terraform:
+   ```sh
+   terraform init
+   ```
+
+3. Create or update the `terraform.tfvars` file with your database details:
+   ```
+   db_server = "your_server"
+   db_username = "your_username"
+   db_password = "your_password"
+   db_database = "your_database"
+   ```
+
+4. Preview the infrastructure changes:
+   ```sh
+   terraform plan
+   ```
+
+5. Apply the infrastructure changes:
+   ```sh
+   terraform apply
+   ```
+
+6. After successful deployment, retrieve the application URLs:
+   ```sh
+   terraform output first_app_url
+   terraform output first_api_url
+   ```
+
+### Automated Deployment
+
+For a fully automated deployment process:
+
+1. Ensure you have all environment variables set up correctly in a .env file at the root of the project.
+
+2. Run the deployment script:
+   ```sh
+   python deploy.py
+   ```
+
+   This script performs the following tasks:
+   - Initializes Terraform configuration
+   - Creates the resource group and Azure Container Registry
+   - Builds and pushes Docker images to ACR
+   - Deploys the complete infrastructure using Terraform
+   - Outputs the URLs for accessing the deployed application
+
+### Clean Up Resources
+
+To remove all Azure resources when they are no longer needed:
+```sh
+cd terraform
+terraform destroy
+```
 
 ## Learn More
 
@@ -140,7 +207,10 @@ To learn more about the technologies used in this project, check out the followi
 - [Node.js](https://nodejs.org/)
 - [Express](https://expressjs.com/)
 - [React](https://reactjs.org/)
-- [Create React App](https://create-react-app.dev/)
+- [Docker](https://www.docker.com/)
+- [Terraform](https://www.terraform.io/)
+- [Azure Container Instances](https://azure.microsoft.com/en-us/products/container-instances/)
+- [Azure Container Registry](https://azure.microsoft.com/en-us/products/container-registry/)
 - [Yahoo Query](https://pypi.org/project/yahooquery/)
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 
