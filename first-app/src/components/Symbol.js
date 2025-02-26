@@ -62,7 +62,7 @@ class Symbol extends Component {
     render() {
 
 
-        if (this.state.loaded == true) {
+        if (this.state.loaded === true) {
 
             const hits = this.state.data;
             return (
@@ -90,7 +90,7 @@ class Symbol extends Component {
         }
         else {
             return (
-                <p>Not Loaded</p>
+                <p>Loading...</p>
             )
         }
 

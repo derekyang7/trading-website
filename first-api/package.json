@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.17.1",
     "express4-tedious": "^0.3.0",
     "tedious": "^8.3.0"

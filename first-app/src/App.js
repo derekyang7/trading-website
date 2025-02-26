@@ -1,13 +1,11 @@
 import React from 'react';
-import logo from './logo.svg';
-import Test from './components/Test';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Symbol from './components/Symbol';
 import InputForm from './components/InputForm';
 import MyNavbar from './components/MyNavbar';
 import { Component } from 'react';
 import './App.css'
-import { Router, Route, Switch, withRouter } from 'react-router-dom'
+import { Router, Route, Switch } from 'react-router-dom'
 import HomePage from './components/HomePage';
 import Contact from './components/Contact';
 import PriceList from './components/PriceList';

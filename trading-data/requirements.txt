@@ -1,0 +1,6 @@
+numpy
+pandas
+yahooquery
+pyodbc
+sqlalchemy
+python-dotenv

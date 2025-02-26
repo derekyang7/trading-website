@@ -51,9 +51,15 @@
   text-align: center;
 }
 
+.small-text {
+  margin: 2rem;
+  font-size: 1em;
+  text-align: center;
+}
+
 .photo {
   height: 250px;
-  width: 250px; 
+  width: 250px;
 }
 
 .price-list-text {
@@ -61,7 +67,7 @@
   font-size: 1em;
   text-align: center;
 }
- 
+
 .formtext {
   position: relative;
   top: -48px;

@@ -6,7 +6,19 @@ from yahooquery import Ticker
 import datetime
 import pyodbc
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 import sys, getopt
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Access environment variables
+db_server = os.getenv('DB_SERVER')
+db_username = os.getenv('DB_USERNAME')
+db_password = os.getenv('DB_PASSWORD')
+db_database = os.getenv('DB_DATABASE')
 
 def saveToTable(df, tableName, cnxn, engine):
     """
@@ -31,7 +43,7 @@ def saveToTable(df, tableName, cnxn, engine):
     cursor.commit()
     cursor.close()
 
-    df.to_sql(tableName, engine, if_exists='append',schema='dbo', index=True)
+    df.to_sql(tableName, engine, if_exists='append', schema='dbo', index=True)
 
 def downloadDaily(ticker_symbols, cnxn, engine):
     """
@@ -62,24 +74,16 @@ def downloadDaily(ticker_symbols, cnxn, engine):
         daily = ticker.history(period='1y', interval='1d')
         print(f'Downloading {symbol}.')
 
-        # for single symbol dowload, add column symbol and date as indexes
-        daily['symbol'] = symbol
-        daily.reset_index(inplace=True)
-        daily.rename(columns={'index': 'date'}, inplace=True)
-        daily.set_index(['symbol','date'], inplace=True)
-
         daily.to_sql('tmpDaily', engine, if_exists='append',schema='dbo', index=True)
 
-        #print('Saved to table daily')
-
-        df_options = ticker.option_chain
+        # df_options = ticker.option_chain
 
         #check if it's string, if yes, there is no option chain
 
-        if isinstance(df_options, str) == False:
-            print(f'Downloading option chain {symbol}.')
-            df_options['createDate'] = datetime.date.today()
-            df_options.to_sql('Option', engine, if_exists='append',schema='dbo', index=True)
+        # if isinstance(df_options, str) == False:
+        #     print(f'Downloading option chain {symbol}.')
+        #     df_options['createDate'] = datetime.date.today()
+        #     df_options.to_sql('Option', engine, if_exists='append',schema='dbo', index=True)
 
     cursor = cnxn.cursor()
     cursor.execute('EXEC spProcessDailyData')
@@ -114,7 +118,7 @@ def main(argv):
     interval = ''
 
     try:
-        opts, args = getopt.getopt(argv,"hi:",["interval="])
+        opts, args = getopt.getopt(argv, "hi:", ["interval="])
     except getopt.GetoptError:
         print('tradingdatadownload.py -i <interval>')
         sys.exit(2)
@@ -130,15 +134,21 @@ def main(argv):
         print('tradingdatadownload.py -i <interval>')
         sys.exit(2)
 
+    try:
+        cnxn = pyodbc.connect(f'Driver={{ODBC Driver 18 for SQL Server}};Server={db_server};Database={db_database};Uid={db_username};Pwd={db_password};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;')
+        cnxn_string = f'Driver={{ODBC Driver 18 for SQL Server}};Server={db_server};Database={db_database};Uid={db_username};Pwd={db_password};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;'
+    except pyodbc.Error as ex:
+        sqlstate = ex.args[1]
+        print(sqlstate)
+        sys.exit(2)
 
-    #cnxn = pyodbc.connect("dsn=azure-trading;UID=sqladmin;PWD=PASSWORD")
-    #engine = create_engine("mssql+pyodbc://sqladmin:PASSWORD@DSN")
-    cnxn = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};SERVER=IP;UID=sa;PWD=PASSWORD;database=trading")
-    engine = create_engine("mssql+pyodbc://sa:PASSWORD@IP/trading?driver=ODBC+Driver+17+for+SQL+Server")
+
+    cnxn_url = URL.create("mssql+pyodbc", query={"odbc_connect": cnxn_string})
+
+    engine = create_engine(cnxn_url)
     sym = pd.read_sql_table("Symbol", engine)
     ticker_symbols = sym['Symbol'].values.tolist()
     print(ticker_symbols)
-
 
     if interval == 'weekly':
         tickers = Ticker(ticker_symbols)
@@ -148,8 +158,6 @@ def main(argv):
         print('Saved to table weekly')
 
     if interval == 'daily':
-        #daily = tickers.history('1mo', interval='1d')
-        #saveToTable(daily, 'Daily', cnxn, engine)
         downloadDaily(ticker_symbols, cnxn, engine)
 
     if interval == 'hourly':

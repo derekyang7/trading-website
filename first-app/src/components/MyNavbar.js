@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Navbar, NavDropdown, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
 
 class MyNavbar extends Component {
     /**

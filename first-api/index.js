@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var tediousExpress = require('express4-tedious');
 var TYPES = require('tedious').TYPES;
@@ -17,18 +18,16 @@ var app = express();
  * @property {string} options.database - The name of the database.
  */
 
-var connection =
-{
-    "server": "192.168.1.19",
+var connection = {
+    "server": process.env.DB_SERVER,
     "authentication": {
         type: "default",
         options: {
-            "userName": "sa",
-            "password": "___",
+            "userName": process.env.DB_USERNAME,
+            "password": process.env.DB_PASSWORD,
         }
     },
-
-    options: { "encrypt": true, "database": "trading" }
+    options: { "trustServerCertificate": true, "encrypt": true, "database": process.env.DB_DATABASE }
 };
 
 /**
