@@ -34,8 +34,8 @@ resource "azurerm_mssql_server" "sql_server" {
 resource "azurerm_mssql_database" "sql_db" {
   name        = var.db_database
   server_id   = azurerm_mssql_server.sql_server.id
-  sku_name    = "GP_S_Gen5_1"
-  max_size_gb = 4
+  sku_name    = "Basic"
+  max_size_gb = 2
 
   # Prevents Terraform from trying to change these settings
   # which would cause downtime during apply
@@ -135,7 +135,14 @@ resource "azurerm_container_group" "first_app" {
 
     environment_variables = {
       "REACT_APP_API_URL" = "http://${azurerm_container_group.first_api.fqdn}:3001"
+      "PORT" = "3000"
+      "NODE_ENV" = "production"
     }
+  }
+
+  exposed_port {
+    port     = 3000
+    protocol = "TCP"
   }
 
   image_registry_credential {
